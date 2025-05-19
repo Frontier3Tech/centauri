@@ -1,0 +1,23 @@
+{
+  "name": "centaur",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@kiruse/restful": "^0.2.4",
+    "@types/bun": "latest",
+    "bun-coffeescript": "^1.0.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@apophis-sdk/core": "^0.3.1",
+    "@apophis-sdk/cosmos": "^0.3.1",
+    "@apophis-sdk/cosmos-signers": "^0.3.1",
+    "@apophis-sdk/cosmwasm": "^0.3.1",
+    "@kiruse/cosmos-components": "^0.1.2",
+    "@kiruse/hiproto": "^0.1.5",
+    "pug": "^3.0.3"
+  }
+}
