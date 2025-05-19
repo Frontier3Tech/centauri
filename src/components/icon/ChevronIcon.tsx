@@ -17,7 +17,7 @@ export function ChevronIcon({
     <svg
       width={width}
       height={height}
-      class={cx('icon icon-chevron', direction, className)}
+      class={cx('icon icon-chevron icon-orient', direction, className)}
       fill="none"
       stroke={color}
       viewBox="0 0 24 24"

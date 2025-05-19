@@ -3,7 +3,7 @@
 li
   margin: 0
 
-.icon-chevron
+.icon-orient
   transition: transform 0.2s ease-in-out
   &.up
     transform: rotate(180deg)
@@ -13,3 +13,20 @@ li
     transform: rotate(90deg)
   &.right
     transform: rotate(-90deg)
+
+.animate-ellipsis::after
+  content: "..."
+  animation: ellipsis 1.5s infinite
+  display: inline-block
+  text-align: left
+  white-space: pre
+
+@keyframes ellipsis
+  0%
+    content: ".  "
+  33%
+    content: ".. "
+  66%
+    content: "..."
+  100%
+    content: ".  "
