@@ -1,0 +1,15 @@
+@use 'tailwindcss'
+
+li
+  margin: 0
+
+.icon-chevron
+  transition: transform 0.2s ease-in-out
+  &.up
+    transform: rotate(180deg)
+  &.down
+    transform: rotate(0deg)
+  &.left
+    transform: rotate(90deg)
+  &.right
+    transform: rotate(-90deg)

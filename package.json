@@ -3,13 +3,10 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
-  "devDependencies": {
-    "@kiruse/restful": "^0.2.4",
-    "@types/bun": "latest",
-    "bun-coffeescript": "^1.0.3"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@apophis-sdk/core": "^0.3.1",
@@ -18,6 +15,21 @@
     "@apophis-sdk/cosmwasm": "^0.3.1",
     "@kiruse/cosmos-components": "^0.1.2",
     "@kiruse/hiproto": "^0.1.5",
-    "pug": "^3.0.3"
+    "@preact/signals": "^2.0.4",
+    "classnames": "^2.5.1",
+    "preact": "^10.19.6",
+    "sass": "^1.89.0",
+    "tailwindcss": "^4.1.7"
+  },
+  "devDependencies": {
+    "@kiruse/restful": "^0.2.4",
+    "@preact/preset-vite": "^2.8.1",
+    "@tailwindcss/postcss": "^4.1.7",
+    "@types/bun": "latest",
+    "autoprefixer": "^10.4.21",
+    "bun-coffeescript": "^1.0.3",
+    "postcss": "^8.5.3",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4"
   }
 }
