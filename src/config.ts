@@ -107,5 +107,5 @@ export async function getNetworks() {
         { endpoints }
       )]
   )));
-  return _networks!;
+  return _networks! as Record<keyof typeof endpoints, CosmosNetworkConfig>;
 }
