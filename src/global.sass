@@ -3,6 +3,13 @@
 li
   margin: 0
 
+cosmos-tooltip
+  // Default padding is overridden by tailwindcss, so we gotta re-apply it here
+  padding: 8px
+  > *
+    width: fit-content
+    margin: 0 auto
+
 .icon-orient
   transition: transform 0.2s ease-in-out
   &.up

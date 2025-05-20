@@ -6,6 +6,7 @@ import { CreateSubdenom, creator, subdenom } from '~/state';
 import { TokenFactory } from '~/tokenfactory';
 import { Accordion } from './Accordion';
 import { Label } from './Label';
+import { NetworkSelector } from './NetworkSelector';
 
 export function MainContent() {
   const loading = useSignal(true);
@@ -78,6 +79,8 @@ export function MainContent() {
 
   return (
     <main class="flex-1 max-w-7xl mx-auto p-4 overflow-y-auto overflow-x-hidden">
+      <NetworkSelector label="Network Selection" />
+
       <Accordion>
         <Accordion.Item title="Metadata">
           <div class="space-y-6">

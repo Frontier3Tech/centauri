@@ -7,16 +7,19 @@ import { useSignal } from '@preact/signals';
 
 interface InfoProps {
   children: JSX.Element | string;
+  placement?: 'top' | 'bottom' | 'left' | 'right';
   class?: string;
 }
 
-export function Info({ children, class: className }: InfoProps): JSX.Element {
+export function Info({ children, placement = 'top', class: className }: InfoProps): JSX.Element {
   const iconRef = useSignal<SVGSVGElement | null>(null);
   useTooltip(iconRef, () => (
     <div class="text-sm">
       {children}
     </div>
-  ));
+  ), {
+    placement,
+  });
 
   return (
     <div class={cx('inline-flex items-center gap-1 text-gray-500', className)}>
