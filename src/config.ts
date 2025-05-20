@@ -1,8 +1,10 @@
 import type { CosmosNetworkConfig } from '@apophis-sdk/core';
 import { Cosmos } from '@apophis-sdk/cosmos';
 
+/** Tips for denom creation, on top of denom creation fee (set in params). */
 export const tips = {
   neutron: Cosmos.coin(10_000000n, 'untrn'),
+  neutrontestnet: Cosmos.coin(100000n, 'untrn'),
   terra2: Cosmos.coin(1_000000n, 'uluna'),
   terra: Cosmos.coin(10_000_000000n, 'uluna'),
   osmosis: Cosmos.coin(10_000000n, 'uosmo'),
@@ -64,6 +66,19 @@ export async function getNetworks() {
         "wss://rpc-lb.neutron.org/websocket",
         "wss://neutron-rpc.publicnode.com:443/websocket",
         "wss://neutron.drpc.org/websocket",
+      ],
+    },
+    neutrontestnet: {
+      "rest": [
+        "https://rest-falcron.pion-1.ntrn.tech",
+      ],
+      "rpc": [
+        "https://rpc-falcron.pion-1.ntrn.tech",
+        "https://neutron-testnet-rpc.polkachu.com/",
+      ],
+      "ws": [
+        "wss://rpc-falcron.pion-1.ntrn.tech/websocket",
+        "wss://neutron-testnet-rpc.polkachu.com/websocket",
       ],
     },
     terra: {

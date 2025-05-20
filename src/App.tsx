@@ -8,7 +8,7 @@ export function App() {
       <Header />
 
       <div className="flex flex-1">
-        <Sidebar items={[]} />
+        <Sidebar />
         <MainContent />
       </div>
     </div>

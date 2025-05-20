@@ -31,7 +31,10 @@ export namespace TokenFactory {
   };
 
   export type TokenMetadata = hpb.infer<typeof pbMetadata>;
+  export type DenomUnit = Required<hpb.infer<typeof pbMetadata>>['denomUnits'][number];
 
+  // TODO: Metadata has been added to Apophis SDK, but has not been released yet. Will be released
+  // in v0.3.2.
   export const pbMetadata = hpb.message({
     description: hpb.string(1),
     denomUnits: hpb.repeated.submessage(2, {
@@ -169,6 +172,14 @@ export namespace TokenFactory {
 
   export namespace Query {
     const getApi = (network: CosmosNetworkConfig) => Cosmos.rest(network) as unknown as TokenFactoryRestApi;
+
+    //#region DenomMetadata
+    export async function denomMetadata(network: CosmosNetworkConfig, creator: string, subdenom: string) {
+      const denom = encodeURIComponent(`factory/${creator}/${subdenom}`);
+      const result = await Cosmos.rest(network).cosmos.bank.v1beta1.denoms_metadata[denom]!('GET');
+      return result.metadata;
+    }
+    //#endregion
 
     //#region Params
     export const pbParamsReq = hpb.message({});
