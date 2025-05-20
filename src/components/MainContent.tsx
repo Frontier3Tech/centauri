@@ -5,6 +5,7 @@ import { type ChangeEvent } from 'preact/compat';
 import { CreateSubdenom, creator, subdenom } from '~/state';
 import { TokenFactory } from '~/tokenfactory';
 import { Accordion } from './Accordion';
+import { Label } from './Label';
 
 export function MainContent() {
   const loading = useSignal(true);
@@ -82,60 +83,42 @@ export function MainContent() {
           <div class="space-y-6">
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="text-sm text-gray-500">Name</label>
+                <Label required info="Full name of your token.">
+                  Name
+                </Label>
                 <input
-                  type="text"
                   value={metadata.value.name}
                   onChange={handleInputChange('name')}
                   class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label class="text-sm text-gray-500">Symbol</label>
+                <Label required info="Canonical symbol of your token.">
+                  Symbol
+                </Label>
                 <input
-                  type="text"
                   value={metadata.value.symbol}
                   onChange={handleInputChange('symbol')}
                   class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label class="text-sm text-gray-500">Base</label>
+                <Label>Logo URI</Label>
                 <input
-                  type="text"
-                  value={metadata.value.base}
-                  onChange={handleInputChange('base')}
-                  class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label class="text-sm text-gray-500">Display</label>
-                <input
-                  type="text"
-                  value={metadata.value.display}
-                  onChange={handleInputChange('display')}
+                  value={metadata.value.uri || ''}
+                  onChange={handleInputChange('uri')}
                   class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
 
             <div>
-              <label class="text-sm text-gray-500">Description</label>
+              <Label>Description</Label>
               <textarea
                 value={metadata.value.description || ''}
                 onChange={handleInputChange('description')}
                 class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 rows={3}
-              />
-            </div>
-
-            <div>
-              <label class="text-sm text-gray-500">URI</label>
-              <input
-                type="text"
-                value={metadata.value.uri || ''}
-                onChange={handleInputChange('uri')}
-                class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 

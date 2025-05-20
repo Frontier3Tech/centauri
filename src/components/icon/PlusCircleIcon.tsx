@@ -1,17 +1,19 @@
 import cx from 'classnames';
+import { forwardRef } from 'preact/compat';
 import type { IconBaseProps } from './base';
 
 export interface PlusCircleIconProps extends IconBaseProps {}
 
-export function PlusCircleIcon({
+export const PlusCircleIcon = forwardRef<SVGSVGElement, PlusCircleIconProps>(({
   width = 24,
   height = 24,
   color = 'currentColor',
   class: className = '',
   style
-}: PlusCircleIconProps) {
+}, ref) => {
   return (
     <svg
+      ref={ref}
       width={width}
       height={height}
       class={cx('icon icon-plus-circle', className)}
@@ -36,4 +38,4 @@ export function PlusCircleIcon({
       />
     </svg>
   );
-}
+});

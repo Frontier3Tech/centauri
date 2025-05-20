@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+This project uses Preact with `@preact/signals`. Always use Preact props, i.e. `class` instead of `className` and hyphenated (SVG) attributes. Avoid `useState` and prefer `useSignal` instead. Avoid value + callback props patterns and use signals instead. When composing JSX class names, use the `classnames` package, importing it as `cs`
