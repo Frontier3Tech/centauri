@@ -62,7 +62,7 @@ function AccordionItem({ children, title, ...props }: AccordionItemProps) {
   return (
     <div className="border-b border-gray-200">
       <button
-        className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 cursor-pointer"
+        className="w-full px-6 py-4 text-left flex justify-between items-center bg-[#f0f0f0] hover:bg-[#e9e9e9] transition-colors cursor-pointer"
         onClick={() => onToggle(index)}
       >
         <span className="font-medium">{title}</span>
@@ -91,7 +91,7 @@ export function Accordion({ children, ...props }: AccordionProps) {
   const activeIndex = usePropSignal(props.active, 0);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm">
+    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       {Children.map(children, (child, index) =>
         cloneElement(child as VNode, {
           index,
