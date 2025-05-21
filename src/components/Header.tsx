@@ -7,11 +7,11 @@ export function Header() {
   const isConnected = !!signer.value;
 
   return (
-    <header class="bg-white shadow-sm z-40 flex-shrink-0">
+    <header class="bg-sky-800 text-white shadow-sm z-40 flex-shrink-0">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Frontier3 Centauri</h1>
-          <p class="text-sm text-gray-500">Cosmos TokenFactory GUI</p>
+          <h1 class="text-2xl font-bold text-white">Frontier3 Centauri</h1>
+          <p class="text-sm text-gray-300">Cosmos TokenFactory GUI</p>
         </div>
         {isConnected ? (
           <cosmos-user-address />
@@ -19,11 +19,9 @@ export function Header() {
           <button
             onClick={connect}
             class={cx(
-              'px-4 py-2 rounded-md',
-              isConnected
-                ? 'bg-green-500 hover:bg-green-600'
-                : 'bg-blue-500 hover:bg-blue-600',
-              'text-white font-medium transition-colors',
+              'px-4 py-2 rounded-md font-medium transition-colors cursor-pointer',
+              'bg-gray-200 hover:bg-white',
+              'text-sky-700 hover:text-sky-800',
             )}
           >
             Connect

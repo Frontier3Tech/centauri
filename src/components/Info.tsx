@@ -24,7 +24,6 @@ export function Info({ children, placement = 'top', class: className }: InfoProp
   return (
     <div class={cx('inline-flex items-center gap-1 text-gray-500', className)}>
       <InfoIcon ref={(el: any) => iconRef.value = el} width={16} height={16} class="text-gray-400" />
-      <span class="text-sm">{children}</span>
     </div>
   );
 }

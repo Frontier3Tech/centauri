@@ -7,6 +7,7 @@ import { TokenFactory } from '~/tokenfactory';
 import { Accordion } from './Accordion';
 import { Label } from './Label';
 import { NetworkSelector } from './NetworkSelector';
+import { CreationFee } from './CreationFee';
 
 export function MainContent() {
   const loading = useSignal(true);
@@ -125,7 +126,8 @@ export function MainContent() {
               />
             </div>
 
-            <div class="flex justify-end">
+            <div class="flex justify-between">
+              <CreationFee />
               <button
                 onClick={handleUpdate}
                 class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"

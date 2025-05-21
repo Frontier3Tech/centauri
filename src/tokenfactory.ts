@@ -3,7 +3,15 @@ import { registerDefaultProtobufSchema } from '@apophis-sdk/core/encoding/protob
 import { Cosmos, registerDefaultAminos } from '@apophis-sdk/cosmos';
 import { pbCoin } from '@apophis-sdk/cosmos/encoding/protobuf/core.js';
 import { hpb } from '@kiruse/hiproto';
+import { extendDefaultMarshaller, RecaseMarshalUnit } from '@kiruse/marshal';
 import type { RestMethods } from '@kiruse/restful';
+
+const { marshal, unmarshal } = extendDefaultMarshaller([
+  RecaseMarshalUnit(
+    key => key.toLowerCase().replace(/[A-Z]/g, c => '_' + c.toLowerCase()),
+    key => key.replace(/_([a-z])/g, (_, c) => c.toUpperCase()),
+  )
+]);
 
 export namespace TokenFactory {
   export type TokenFactoryRestApi = {
@@ -177,7 +185,7 @@ export namespace TokenFactory {
     export async function denomMetadata(network: CosmosNetworkConfig, creator: string, subdenom: string) {
       const denom = encodeURIComponent(`factory/${creator}/${subdenom}`);
       const result = await Cosmos.rest(network).cosmos.bank.v1beta1.denoms_metadata[denom]!('GET');
-      return result.metadata;
+      return unmarshal(result.metadata) as typeof result.metadata;
     }
     //#endregion
 
@@ -192,7 +200,8 @@ export namespace TokenFactory {
     });
 
     export async function params(network: CosmosNetworkConfig) {
-      return await getApi(network).osmosis.tokenfactory.v1beta1.params('GET');
+      const res = await getApi(network).osmosis.tokenfactory.v1beta1.params('GET');
+      return unmarshal(res.params) as typeof res.params;
     }
     //#endregion
 
@@ -208,7 +217,8 @@ export namespace TokenFactory {
     });
 
     export async function denomAuthorityMetadata(network: CosmosNetworkConfig, denom: string) {
-      return await getApi(network).osmosis.tokenfactory.v1beta1[denom]!.authority_metadata('GET');
+      const res = await getApi(network).osmosis.tokenfactory.v1beta1[denom]!.authority_metadata('GET');
+      return unmarshal(res.denomAuthorityMetadata) as typeof res.denomAuthorityMetadata;
     }
     //#endregion
 
@@ -222,7 +232,8 @@ export namespace TokenFactory {
     });
 
     export async function denomsFromCreator(network: CosmosNetworkConfig, creator: string) {
-      return await getApi(network).osmosis.tokenfactory.v1beta1.denoms_from_creator[creator]!('GET');
+      const res = await getApi(network).osmosis.tokenfactory.v1beta1.denoms_from_creator[creator]!('GET');
+      return unmarshal(res.denoms) as typeof res.denoms;
     }
     //#endregion
   }

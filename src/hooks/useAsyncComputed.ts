@@ -1,4 +1,4 @@
-import { useComputed, useSignal, type ReadonlySignal } from '@preact/signals';
+import { useSignal, useSignalEffect } from '@preact/signals';
 
 export enum ReadyState {
   Pending = 'pending',
@@ -28,7 +28,7 @@ export function useAsyncComputed<T>(
     value: initial,
   });
 
-  useComputed(() => {
+  useSignalEffect(() => {
     let isMounted = true;
 
     callback()

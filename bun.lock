@@ -9,6 +9,7 @@
         "@apophis-sdk/cosmos-signers": "^0.3.1",
         "@apophis-sdk/cosmwasm": "^0.3.1",
         "@kiruse/cosmos-components": "^0.1.5",
+        "@kiruse/decimal": "^1.0.5-fix.1",
         "@kiruse/hiproto": "^0.1.5",
         "@preact/signals": "^2.0.4",
         "classnames": "^2.5.1",
