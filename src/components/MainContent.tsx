@@ -9,6 +9,7 @@ import { Accordion } from './Accordion';
 import { CreationFee } from './CreationFee';
 import { Label } from './Label';
 import { NetworkSelector } from './NetworkSelector';
+import { Collapsible } from './Collapsible';
 
 export function MainContent() {
   const creating = useComputed(() => state.subdenom.value === state.CreateSubdenom);
@@ -159,6 +160,10 @@ export function MainContent() {
               />
             </div>
 
+            <Collapsible title="Units" class="border border-gray-300 rounded-md">
+              Foobar
+            </Collapsible>
+
             <div class="flex justify-between">
               <CreationFee />
               <button
@@ -176,13 +181,7 @@ export function MainContent() {
             </div>
           </div>
         </Accordion.Item>
-        <Accordion.Item title="Mint Token">
-          {/* Add form content here */}
-        </Accordion.Item>
-        <Accordion.Item title="Burn Token">
-          {/* Add form content here */}
-        </Accordion.Item>
-        <Accordion.Item title="Force Transfer">
+        <Accordion.Item title="Manage">
           {/* Add form content here */}
         </Accordion.Item>
       </Accordion>

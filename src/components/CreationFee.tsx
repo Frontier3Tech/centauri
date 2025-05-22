@@ -9,14 +9,15 @@ import { Decimal } from '@kiruse/decimal';
 export function CreationFee() {
   const nativeFees = useAsyncComputed<{ denom: string; amount: Decimal }[]>([], async () => {
     if (!network.value) return [];
-    const params = await TokenFactory.Query.params(network.value as CosmosNetworkConfig);
-    return params!.denomCreationFee!.map(coin => {
+    const params = await TokenFactory.Query.params(network.value as CosmosNetworkConfig)
+      .catch(() => null);
+    return params?.denomCreationFee?.map(coin => {
       const asset = getAsset(network.value as CosmosNetworkConfig, coin.denom);
       return {
         denom: asset?.name ?? coin.denom,
         amount: new Decimal(coin.amount, asset?.display?.decimals ?? 6),
       };
-    });
+    }) ?? [];
   });
 
   const centauriFee = useComputed(() => {

@@ -1,9 +1,13 @@
 import cx from 'classnames';
 import { forwardRef } from 'preact/compat';
 import type { IconBaseProps } from './base';
+import { useComputed, type ReadonlySignal } from '@preact/signals';
+import { usePropSignal } from '~/hooks/usePropSignal';
+
+export type ChevronDirection = 'up' | 'down' | 'left' | 'right';
 
 export interface ChevronIconProps extends IconBaseProps {
-  direction?: 'up' | 'down' | 'left' | 'right';
+  direction?: ChevronDirection | ReadonlySignal<ChevronDirection>;
 }
 
 export const ChevronIcon = forwardRef<SVGSVGElement, ChevronIconProps>(({
@@ -11,15 +15,18 @@ export const ChevronIcon = forwardRef<SVGSVGElement, ChevronIconProps>(({
   height = 24,
   color = 'currentColor',
   class: className = '',
-  direction = 'down',
+  direction,
   style
 }, ref) => {
+  const directionSignal = usePropSignal(direction, 'down');
+  const classes = useComputed(() => cx('icon icon-chevron icon-orient', directionSignal.value, className));
+
   return (
     <svg
       ref={ref}
       width={width}
       height={height}
-      class={cx('icon icon-chevron icon-orient', direction, className)}
+      class={classes}
       fill="none"
       stroke={color}
       viewBox="0 0 24 24"
