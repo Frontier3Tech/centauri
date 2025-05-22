@@ -6,7 +6,6 @@ export const tips = {
   neutron: Cosmos.coin(10_000000n, 'untrn'),
   neutrontestnet: Cosmos.coin(100000n, 'untrn'),
   terra2: Cosmos.coin(10_000000n, 'uluna'),
-  terra: Cosmos.coin(25_000_000000n, 'uluna'),
   osmosis: Cosmos.coin(10_000000n, 'uosmo'),
 };
 
@@ -93,24 +92,6 @@ export async function getNetworks() {
       "ws": [
         "wss://terra-classic-rpc.publicnode.com:443/websocket",
         "wss://terraclassic-mainnet-rpc.autostake.com:443/websocket",
-      ],
-    },
-    terra2: {
-      "rest": [
-        "https://terra-rest.publicnode.com",
-        "https://terra-api.cosmosrescue.dev:8443",
-      ],
-      "rpc": [
-        "https://rpc.lavenderfive.com:443/terra2",
-        "https://terra-rpc.polkachu.com",
-        "https://terra-rpc.publicnode.com:443",
-        "https://terra-rpc.cosmosrescue.dev:8443",
-      ],
-      "ws": [
-        "wss://rpc.lavenderfive.com:443/terra2/websocket",
-        "wss://terra-rpc.polkachu.com/websocket",
-        "wss://terra-rpc.publicnode.com:443/websocket",
-        "wss://terra-rpc.cosmosrescue.dev:8443/websocket",
       ],
     },
   };
