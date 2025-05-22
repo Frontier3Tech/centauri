@@ -179,7 +179,7 @@ function MetadataSection({ metadata }: { metadata: Signal<TokenFactory.TokenMeta
       </div>
 
       <Collapsible title="Units" class="border border-gray-300 rounded-md">
-        <UnitsTable units={units} />
+        <UnitsSection units={units} />
         <button
           class="w-full flex items-center gap-2 px-6 py-4 border-t border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-gray-900"
           onClick={() => {
@@ -210,7 +210,7 @@ function MetadataSection({ metadata }: { metadata: Signal<TokenFactory.TokenMeta
   );
 }
 
-function UnitsTable({ units }: { units: Signal<DenomUnit[]> }) {
+function UnitsSection({ units }: { units: Signal<DenomUnit[]> }) {
   const handleUnitChange = (index: number, field: keyof DenomUnit, value: string | number | string[]) => {
     const newUnits = [...units.value];
     newUnits[index] = {
@@ -221,54 +221,54 @@ function UnitsTable({ units }: { units: Signal<DenomUnit[]> }) {
   };
 
   return (
-    <table class="min-w-full divide-y divide-gray-200">
-      <thead>
-        <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Denom</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Decimals</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aliases</th>
-          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-        </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
-        {units.value.map((unit, index) => (
-          <tr key={index}>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+    <div class="divide-y divide-gray-200">
+      {units.value.map((unit, index) => (
+        <div key={index} class="p-6 space-y-4">
+          <div class="space-y-4">
+            <div>
+              <Label required>Denom</Label>
               <input
+                required
                 value={unit.denom}
                 onChange={(e) => handleUnitChange(index, 'denom', (e.target as HTMLInputElement).value)}
-                class="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            </div>
+            <div>
+              <Label required>Decimals</Label>
               <input
+                required
                 type="number"
+                step="1"
+                min="0"
                 value={unit.exponent}
                 onChange={(e) => handleUnitChange(index, 'exponent', parseInt((e.target as HTMLInputElement).value) || 0)}
-                class="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            </div>
+            <div>
+              <Label>Aliases</Label>
               <input
                 value={unit.aliases?.join(', ') || ''}
                 onChange={(e) => handleUnitChange(index, 'aliases', (e.target as HTMLInputElement).value.split(',').map(s => s.trim()).filter(Boolean))}
                 placeholder="Comma-separated aliases"
-                class="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </td>
-            <td class="px-6 w-4 whitespace-nowrap text-right text-sm font-medium">
+            </div>
+            <div class="flex justify-end">
               <button
                 onClick={() => {
                   units.value = units.value.filter((_, i) => i !== index);
                 }}
-                class="p-2 text-red-600 hover:text-red-500 rounded-full bg-white hover:bg-gray-50 transition-colors"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
               >
                 <TrashIcon width={20} height={20} />
+                <span>Delete</span>
               </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
