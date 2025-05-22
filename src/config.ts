@@ -5,8 +5,8 @@ import { Cosmos } from '@apophis-sdk/cosmos';
 export const tips = {
   neutron: Cosmos.coin(10_000000n, 'untrn'),
   neutrontestnet: Cosmos.coin(100000n, 'untrn'),
-  terra2: Cosmos.coin(1_000000n, 'uluna'),
-  terra: Cosmos.coin(10_000_000000n, 'uluna'),
+  terra2: Cosmos.coin(10_000000n, 'uluna'),
+  terra: Cosmos.coin(25_000_000000n, 'uluna'),
   osmosis: Cosmos.coin(10_000000n, 'uosmo'),
 };
 
