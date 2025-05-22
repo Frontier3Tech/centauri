@@ -12,8 +12,12 @@ import { PlusCircleIcon } from './icon/PlusCircleIcon';
 import { TrashIcon } from './icon/TrashIcon';
 import { Label } from './Label';
 import { NetworkSelector } from './NetworkSelector';
+import { Info } from './Info';
+import { marshal } from '~/config';
 
-type DenomUnit = TokenFactory.DenomUnit;
+type DenomUnit = TokenFactory.DenomUnit & {
+  display?: boolean;
+};
 
 export function MainContent() {
   const loading = useSignal(true);
@@ -90,12 +94,14 @@ export function MainContent() {
 
 function MetadataSection({ metadata }: { metadata: Signal<TokenFactory.TokenMetadata> }) {
   const creating = useComputed(() => state.subdenom.value === state.CreateSubdenom);
-  const units = useSignal<DenomUnit[]>([]);
+  const units = useSignal<DenomUnit[]>(metadata.peek()?.denomUnits ?? []);
+  const aliases = useSignal<string[]>(metadata.peek()?.denomUnits?.[0]?.aliases ?? []);
 
   const newSubdenom = useSignal('');
 
   const isValid = useComputed(() => {
     if (creating.value) {
+      if (!newSubdenom.value.trim()) return false;
       if (newSubdenom.value.includes('/')) return false;
     }
 
@@ -104,12 +110,55 @@ function MetadataSection({ metadata }: { metadata: Signal<TokenFactory.TokenMeta
     const { name, symbol } = metadata.value;
     if (!name?.trim() || !symbol?.trim()) return false;
 
+    if (units.value.some(unit => unit.denom?.trim() === '')) return false;
+
     return true;
   });
 
+  const createFinalMetadata = () => {
+    const denom = `factory/${state.creator.value}/${newSubdenom.value}`;
+    const display = units.value.find(unit => unit.display);
+
+    return {
+      name: metadata.value.name?.trim() || '',
+      symbol: metadata.value.symbol?.trim() || '',
+      description: metadata.value.description?.trim() || undefined,
+      uri: metadata.value.uri?.trim() || undefined,
+      base: denom,
+      display: display?.denom,
+      denomUnits: [
+        {
+          denom,
+          exponent: 0,
+          aliases: aliases.value,
+        },
+        ...units.value.map(unit => ({
+          denom: unit.denom?.trim() || '',
+          exponent: unit.exponent,
+          aliases: unit.aliases?.filter(Boolean) || [],
+        })),
+      ],
+    } as TokenFactory.TokenMetadata;
+  };
+
   const handleUpdate = () => {
-    // TODO: Implement metadata update logic
-    console.log('Update metadata:', metadata.value);
+    const finalMetadata = createFinalMetadata();
+
+    if (creating.value) {
+      // For creation, we need to include the subdenom
+      console.log('Create token:', {
+        subdenom: newSubdenom.value.trim(),
+        metadata: finalMetadata
+      });
+    } else {
+      // For update, we just need the metadata
+      console.log('Update metadata:', finalMetadata);
+    }
+  };
+
+  const handleCopyJson = () => {
+    const finalMetadata = createFinalMetadata();
+    navigator.clipboard.writeText(JSON.stringify(marshal(finalMetadata), null, 2));
   };
 
   const handleInputChange = (field: keyof TokenFactory.TokenMetadata) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -166,6 +215,15 @@ function MetadataSection({ metadata }: { metadata: Signal<TokenFactory.TokenMeta
             class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+        <div>
+          <Label info="Aliases for the base unit of your token. Typically the micro-unit of your token, e.g. uatom, untrn, etc.">Aliases</Label>
+          <input
+            value={aliases.value.join(', ')}
+            onChange={(e) => aliases.value = (e.target as HTMLInputElement).value.split(',').map(s => s.trim()).filter(Boolean)}
+            placeholder="Comma-separated aliases"
+            class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
       </div>
 
       <div>
@@ -178,7 +236,18 @@ function MetadataSection({ metadata }: { metadata: Signal<TokenFactory.TokenMeta
         />
       </div>
 
-      <Collapsible title="Units" class="border border-gray-300 rounded-md">
+      <Collapsible
+        title={
+          <div class="flex items-center gap-2">
+            Units
+            <Info>
+              Additional units of your token. Typically, this includes the display unit, e.g. <i>atom</i> or <i>ntrn</i>, often
+              with 6 decimals.
+            </Info>
+          </div>
+        }
+        class="border border-gray-300 rounded-md"
+      >
         <UnitsSection units={units} />
         <button
           class="w-full flex items-center gap-2 px-6 py-4 border-t border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-gray-900"
@@ -193,18 +262,32 @@ function MetadataSection({ metadata }: { metadata: Signal<TokenFactory.TokenMeta
 
       <div class="flex justify-between">
         <CreationFee />
-        <button
-          onClick={handleUpdate}
-          disabled={!isValid.value}
-          class={cx(
-            "px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2",
-            isValid.value
-              ? "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          )}
-        >
-          {creating.value ? 'Create' : 'Update'}
-        </button>
+        <div class="flex gap-2">
+          <button
+            onClick={handleCopyJson}
+            disabled={!isValid.value}
+            class={cx(
+              "px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2",
+              isValid.value
+                ? "bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500"
+                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+            )}
+          >
+            Copy JSON
+          </button>
+          <button
+            onClick={handleUpdate}
+            disabled={!isValid.value}
+            class={cx(
+              "px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2",
+              isValid.value
+                ? "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            )}
+          >
+            {creating.value ? 'Create' : 'Update'}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -217,6 +300,14 @@ function UnitsSection({ units }: { units: Signal<DenomUnit[]> }) {
       ...newUnits[index],
       [field]: value
     };
+    units.value = newUnits;
+  };
+
+  const handleDisplayChange = (index: number, checked: boolean) => {
+    const newUnits = units.value.map((unit, i) => ({
+      ...unit,
+      display: i === index ? checked : false
+    }));
     units.value = newUnits;
   };
 
@@ -257,7 +348,22 @@ function UnitsSection({ units }: { units: Signal<DenomUnit[]> }) {
                 class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div class="flex justify-end">
+            <div class="flex justify-between items-center">
+              <label class="inline-flex items-center gap-2 text-sm text-gray-500">
+                <input
+                  type="checkbox"
+                  checked={unit.display}
+                  onChange={(e) => handleDisplayChange(index, (e.target as HTMLInputElement).checked)}
+                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span class="flex items-center gap-2">
+                  For display
+                  <Info>
+                    When checked, UIs will use this unit's decimals for displaying purposes. Typically,
+                    this is the unit with 6 decimals.
+                  </Info>
+                </span>
+              </label>
               <button
                 onClick={() => {
                   units.value = units.value.filter((_, i) => i !== index);

@@ -1,6 +1,6 @@
 import type { CosmosNetworkConfig } from '@apophis-sdk/core';
 import { Cosmos } from '@apophis-sdk/cosmos';
-
+import { extendDefaultMarshaller, RecaseMarshalUnit } from '@kiruse/marshal';
 /** Tips for denom creation, on top of denom creation fee (set in params). */
 export const tips = {
   neutron: Cosmos.coin(10_000000n, 'untrn'),
@@ -105,3 +105,10 @@ export async function getNetworks() {
   )));
   return _networks! as Record<keyof typeof endpoints, CosmosNetworkConfig>;
 }
+
+export const { marshal } = extendDefaultMarshaller([
+  RecaseMarshalUnit(
+    (key) => key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`),
+    (key) => key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
+  )
+])

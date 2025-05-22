@@ -1,5 +1,5 @@
 import { useComputed, useSignal, useSignalEffect, type ReadonlySignal } from '@preact/signals';
-import { type ComponentChildren } from 'preact';
+import { type ComponentChild, type ComponentChildren } from 'preact';
 import { usePropSignal } from '~/hooks/usePropSignal';
 import { ChevronIcon } from './icon/ChevronIcon';
 import { useRef } from 'preact/hooks';
@@ -7,7 +7,7 @@ import { useRef } from 'preact/hooks';
 export interface CollapsibleProps {
   children?: ComponentChildren;
   open?: boolean | ReadonlySignal<boolean>;
-  title?: string;
+  title?: ComponentChild;
   class?: string;
   onToggle?: () => void;
 }

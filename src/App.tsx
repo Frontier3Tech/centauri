@@ -4,7 +4,7 @@ import { MainContent } from './components/MainContent';
 
 export function App() {
   return (
-    <div class="flex flex-col w-screen h-screen">
+    <div class="flex flex-col w-full h-screen">
       <Header />
 
       <div class="flex flex-col md:flex-row flex-1">
