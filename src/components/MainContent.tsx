@@ -225,26 +225,28 @@ function UnitsSection({ units }: { units: Signal<DenomUnit[]> }) {
       {units.value.map((unit, index) => (
         <div key={index} class="p-6 space-y-4">
           <div class="space-y-4">
-            <div>
-              <Label required>Denom</Label>
-              <input
-                required
-                value={unit.denom}
-                onChange={(e) => handleUnitChange(index, 'denom', (e.target as HTMLInputElement).value)}
-                class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <Label required>Decimals</Label>
-              <input
-                required
-                type="number"
-                step="1"
-                min="0"
-                value={unit.exponent}
-                onChange={(e) => handleUnitChange(index, 'exponent', parseInt((e.target as HTMLInputElement).value) || 0)}
-                class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label required>Denom</Label>
+                <input
+                  required
+                  value={unit.denom}
+                  onChange={(e) => handleUnitChange(index, 'denom', (e.target as HTMLInputElement).value)}
+                  class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <Label required>Decimals</Label>
+                <input
+                  required
+                  type="number"
+                  step="1"
+                  min="0"
+                  value={unit.exponent}
+                  onChange={(e) => handleUnitChange(index, 'exponent', parseInt((e.target as HTMLInputElement).value) || 0)}
+                  class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             </div>
             <div>
               <Label>Aliases</Label>
