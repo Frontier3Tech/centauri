@@ -2,6 +2,7 @@ import { useComputed, useSignal, useSignalEffect, type ReadonlySignal } from '@p
 import { type ComponentChildren } from 'preact';
 import { usePropSignal } from '~/hooks/usePropSignal';
 import { ChevronIcon } from './icon/ChevronIcon';
+import { useRef } from 'preact/hooks';
 
 export interface CollapsibleProps {
   children?: ComponentChildren;
@@ -14,10 +15,10 @@ export interface CollapsibleProps {
 export function Collapsible({ children, open, onToggle, title, class: className }: CollapsibleProps) {
   const isOpen = usePropSignal(open, false);
   const direction = useComputed(() => isOpen.value ? 'up' : 'down');
-  const contentEl = useSignal<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
 
   useSignalEffect(() => {
-    const content = contentEl.value;
+    const content = contentRef.current;
     if (!content) return;
 
     const expanding = isOpen.value;
@@ -71,10 +72,8 @@ export function Collapsible({ children, open, onToggle, title, class: className 
           direction={direction}
         />
       </button>
-      <div ref={el => (contentEl.value = el)} class="overflow-hidden h-0">
-        <div class="px-6 py-4">
-          {children}
-        </div>
+      <div ref={contentRef} class="overflow-hidden h-0">
+        {children}
       </div>
     </div>
   );

@@ -26,7 +26,9 @@ function AccordionItem({ children, title, ...props }: AccordionItemProps) {
       onToggle={() => onToggle(index)}
       class="border-b border-gray-200"
     >
-      {children}
+      <div class="px-6 py-4">
+        {children}
+      </div>
     </Collapsible>
   );
 }

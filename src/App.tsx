@@ -4,10 +4,10 @@ import { MainContent } from './components/MainContent';
 
 export function App() {
   return (
-    <div className="flex flex-col w-screen h-screen">
+    <div class="flex flex-col w-screen h-screen">
       <Header />
 
-      <div className="flex flex-1">
+      <div class="flex flex-col md:flex-row flex-1">
         <Sidebar />
         <MainContent />
       </div>
