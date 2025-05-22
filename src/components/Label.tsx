@@ -1,11 +1,11 @@
-import type { JSX } from 'preact';
+import type { ComponentChild, ComponentChildren, JSX } from 'preact';
 import cx from 'classnames';
 import { Info } from './Info';
 
 interface LabelProps {
-  children: JSX.Element | string;
+  children: ComponentChildren;
   required?: boolean;
-  info?: string;
+  info?: ComponentChild;
   class?: string;
 }
 

@@ -1,27 +1,44 @@
 import type { CosmosNetworkConfig } from '@apophis-sdk/core';
 import { signals } from '@apophis-sdk/core';
-import { useSignal, useSignalEffect } from '@preact/signals';
+import { useComputed, useSignal, useSignalEffect } from '@preact/signals';
+import cx from 'classnames';
 import { type ChangeEvent } from 'preact/compat';
-import { CreateSubdenom, creator, subdenom } from '~/state';
+import * as state from '~/state';
 import { TokenFactory } from '~/tokenfactory';
 import { Accordion } from './Accordion';
+import { CreationFee } from './CreationFee';
 import { Label } from './Label';
 import { NetworkSelector } from './NetworkSelector';
-import { CreationFee } from './CreationFee';
 
 export function MainContent() {
+  const creating = useComputed(() => state.subdenom.value === state.CreateSubdenom);
   const loading = useSignal(true);
   const metadata = useSignal<TokenFactory.TokenMetadata | null>(null);
 
+  const newSubdenom = useSignal('');
+
+  const isValid = useComputed(() => {
+    if (creating.value) {
+      if (newSubdenom.value.includes('/')) return false;
+    }
+
+    if (!metadata.value) return false;
+
+    const { name, symbol } = metadata.value;
+    if (!name?.trim() || !symbol?.trim()) return false;
+
+    return true;
+  });
+
   useSignalEffect(() => {
     loading.value = true;
-    if (!subdenom.value) {
+    if (!state.subdenom.value) {
       metadata.value = null;
       loading.value = false;
       return;
     }
 
-    if (subdenom.value === CreateSubdenom) {
+    if (state.subdenom.value === state.CreateSubdenom) {
       metadata.value = {};
       loading.value = false;
       return;
@@ -29,8 +46,8 @@ export function MainContent() {
 
     TokenFactory.Query.denomMetadata(
       signals.network.value as CosmosNetworkConfig,
-      creator.value!,
-      subdenom.value!,
+      state.creator.value!,
+      state.subdenom.value!,
     ).then(result => {
       metadata.value = result;
     }).finally(() => {
@@ -85,6 +102,22 @@ export function MainContent() {
       <Accordion>
         <Accordion.Item title="Metadata">
           <div class="space-y-6">
+            {creating.value && (
+              <div>
+                <Label required info={
+                  <span>
+                    Subdenom of your new token. Must be unique to your account. The result will be <code class="font-mono">factory/{state.creator.value}/{newSubdenom.value || '<subdenom>'}</code>.
+                  </span>
+                }>
+                  Subdenom
+                </Label>
+                <input
+                  value={newSubdenom.value}
+                  onChange={(e) => (newSubdenom.value = (e.target as HTMLInputElement).value)}
+                  class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            )}
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <Label required info="Full name of your token.">
@@ -130,9 +163,15 @@ export function MainContent() {
               <CreationFee />
               <button
                 onClick={handleUpdate}
-                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                disabled={!isValid.value}
+                class={cx(
+                  "px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2",
+                  isValid.value
+                    ? "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                )}
               >
-                {subdenom.value === CreateSubdenom ? 'Create' : 'Update'}
+                {creating.value ? 'Create' : 'Update'}
               </button>
             </div>
           </div>

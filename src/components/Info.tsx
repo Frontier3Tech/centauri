@@ -1,12 +1,12 @@
 import cx from 'classnames';
-import type { JSX } from 'preact';
+import type { ComponentChild, JSX } from 'preact';
 import { InfoIcon } from './icon/InfoIcon';
 import { tooltip } from '@kiruse/cosmos-components';
 import { useTooltip } from '~/hooks/useTooltip';
 import { useSignal } from '@preact/signals';
 
 interface InfoProps {
-  children: JSX.Element | string;
+  children: ComponentChild;
   placement?: 'top' | 'bottom' | 'left' | 'right';
   class?: string;
 }
