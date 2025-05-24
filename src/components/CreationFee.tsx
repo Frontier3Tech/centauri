@@ -1,12 +1,13 @@
-import { useAsyncComputed } from '~/hooks/useAsyncComputed';
-import { network } from '@apophis-sdk/core/signals.js';
-import { TokenFactory } from '~/tokenfactory';
 import type { CosmosNetworkConfig } from '@apophis-sdk/core';
-import { tips } from '~/config';
-import { useComputed } from '@preact/signals';
+import { network } from '@apophis-sdk/core/signals.js';
+import type { CosmosTxSignal } from '@apophis-sdk/cosmos';
 import { Decimal } from '@kiruse/decimal';
+import { useComputed, type ReadonlySignal } from '@preact/signals';
+import { tips } from '~/config';
+import { useAsyncComputed } from '~/hooks/useAsyncComputed';
+import { TokenFactory } from '~/tokenfactory';
 
-export function CreationFee() {
+export function CreationFee({ tx, valid }: { tx: CosmosTxSignal, valid: ReadonlySignal<boolean> }) {
   const nativeFees = useAsyncComputed<{ denom: string; amount: Decimal }[]>([], async () => {
     if (!network.value) return [];
     const params = await TokenFactory.Query.params(network.value as CosmosNetworkConfig)
@@ -49,6 +50,12 @@ export function CreationFee() {
           <div class="flex gap-2 items-center justify-between text-sm">
             <span>Centauri fee:</span>
             <cosmos-balance denom={centauriFee.value.denom} value={centauriFee.value.amount}></cosmos-balance>
+          </div>
+        )}
+        {valid.value && (
+          <div class="flex gap-2 items-center justify-between text-sm">
+            <span>Gas estimate:</span>
+            <cosmos-gas-estimate tx={tx} />
           </div>
         )}
       </div>

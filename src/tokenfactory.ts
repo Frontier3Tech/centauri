@@ -183,7 +183,7 @@ export namespace TokenFactory {
 
     //#region DenomMetadata
     export async function denomMetadata(network: CosmosNetworkConfig, creator: string, subdenom: string) {
-      const denom = encodeURIComponent(`factory/${creator}/${subdenom}`);
+      const denom = `factory/${creator}/${subdenom}`;
       const result = await Cosmos.rest(network).cosmos.bank.v1beta1.denoms_metadata[denom]!('GET');
       return unmarshal(result.metadata) as typeof result.metadata;
     }

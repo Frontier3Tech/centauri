@@ -1,16 +1,10 @@
-import { CreateSubdenom, creator, subdenom } from '~/state';
+import { CreateSubdenom, subdenom } from '~/state';
 import { PlusCircleIcon } from './icon/PlusCircleIcon';
-import { useAsyncComputed } from '~/hooks/useAsyncComputed';
-import { TokenFactory } from '~/tokenfactory';
-import { signals, type CosmosNetworkConfig } from '@apophis-sdk/core';
 import { ConnectButton } from './ConnectButton';
+import { useCreatorDenoms } from '~/hooks/useCreatorDenoms';
 
 export function Sidebar() {
-  const items = useAsyncComputed<string[]>([], async () => {
-    if (!creator.value) return [];
-    const denoms = await TokenFactory.Query.denomsFromCreator(signals.network.value as CosmosNetworkConfig, creator.value);
-    return denoms ?? [];
-  });
+  const items = useCreatorDenoms();
 
   return (
     <aside class="w-full md:w-64 flex-shrink-0 bg-white shadow-sm flex flex-col md:flex-col max-h-[300px] md:max-h-[100%] overflow-y-auto md:overflow-y-visible">
@@ -38,7 +32,7 @@ export function Sidebar() {
                 subdenom.value = item;
               }}
             >
-              {item}
+              {item.split('/', 3).pop()}
             </a>
           </li>
         ))}

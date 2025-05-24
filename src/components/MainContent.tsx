@@ -1,19 +1,22 @@
 import type { CosmosNetworkConfig } from '@apophis-sdk/core';
 import { signals } from '@apophis-sdk/core';
+import { Cosmos } from '@apophis-sdk/cosmos';
 import { Signal, useComputed, useSignal, useSignalEffect } from '@preact/signals';
 import cx from 'classnames';
-import { type ChangeEvent } from 'preact/compat';
+import { useMemo, type ChangeEvent } from 'preact/compat';
+import { marshal } from '~/config';
 import * as state from '~/state';
 import { TokenFactory } from '~/tokenfactory';
 import { Accordion } from './Accordion';
 import { Collapsible } from './Collapsible';
+import { CreateSubdenom } from './CreateSubdenom';
 import { CreationFee } from './CreationFee';
 import { PlusCircleIcon } from './icon/PlusCircleIcon';
 import { TrashIcon } from './icon/TrashIcon';
+import { Info } from './Info';
 import { Label } from './Label';
 import { NetworkSelector } from './NetworkSelector';
-import { Info } from './Info';
-import { marshal } from '~/config';
+import { useCreatorDenoms } from '~/hooks/useCreatorDenoms';
 
 type DenomUnit = TokenFactory.DenomUnit & {
   display?: boolean;
@@ -22,7 +25,9 @@ type DenomUnit = TokenFactory.DenomUnit & {
 export function MainContent() {
   const loading = useSignal(true);
   const metadata = useSignal<TokenFactory.TokenMetadata | null>(null);
+  const denoms = useCreatorDenoms();
 
+  // Load metadata
   useSignalEffect(() => {
     loading.value = true;
     if (!state.subdenom.value) {
@@ -32,7 +37,7 @@ export function MainContent() {
     }
 
     if (state.subdenom.value === state.CreateSubdenom) {
-      metadata.value = {};
+      metadata.value = null;
       loading.value = false;
       return;
     }
@@ -43,9 +48,18 @@ export function MainContent() {
       state.subdenom.value!,
     ).then(result => {
       metadata.value = result;
+    }).catch(() => {
+      metadata.value = {};
     }).finally(() => {
       loading.value = false;
     });
+  });
+
+  // Show create page by default if no denoms exist
+  useSignalEffect(() => {
+    if (!state.subdenom.value && denoms.value.length === 0) {
+      state.subdenom.value = state.CreateSubdenom;
+    }
   });
 
   if (loading.value) {
@@ -61,6 +75,17 @@ export function MainContent() {
               <span class="font-mono animate-ellipsis"></span>
             </p>
           </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (state.subdenom.value === state.CreateSubdenom) {
+    return (
+      <main class="flex-1 w-full md:w-auto max-w-7xl mx-auto p-1 pt-4 md:p-4 overflow-y-auto overflow-x-hidden">
+        <NetworkSelector label="Network Selection" />
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <CreateSubdenom />
         </div>
       </main>
     );
@@ -93,18 +118,10 @@ export function MainContent() {
 }
 
 function MetadataSection({ metadata }: { metadata: Signal<TokenFactory.TokenMetadata> }) {
-  const creating = useComputed(() => state.subdenom.value === state.CreateSubdenom);
   const units = useSignal<DenomUnit[]>(metadata.peek()?.denomUnits ?? []);
   const aliases = useSignal<string[]>(metadata.peek()?.denomUnits?.[0]?.aliases ?? []);
 
-  const newSubdenom = useSignal('');
-
   const isValid = useComputed(() => {
-    if (creating.value) {
-      if (!newSubdenom.value.trim()) return false;
-      if (newSubdenom.value.includes('/')) return false;
-    }
-
     if (!metadata.value) return false;
 
     const { name, symbol } = metadata.value;
@@ -115,8 +132,19 @@ function MetadataSection({ metadata }: { metadata: Signal<TokenFactory.TokenMeta
     return true;
   });
 
+  const msgs = useComputed(() => {
+    const setMetadataMsg = new TokenFactory.SetDenomMetadata({
+      sender: signals.address.value!,
+      metadata: createFinalMetadata(),
+    });
+
+    return [setMetadataMsg];
+  });
+
+  const tx = useMemo(() => Cosmos.signalTx(msgs), [msgs]);
+
   const createFinalMetadata = () => {
-    const denom = `factory/${state.creator.value}/${newSubdenom.value}`;
+    const denom = `factory/${state.creator.value}/${String(state.subdenom.value)}`;
     const display = units.value.find(unit => unit.display);
 
     return {
@@ -143,17 +171,7 @@ function MetadataSection({ metadata }: { metadata: Signal<TokenFactory.TokenMeta
 
   const handleUpdate = () => {
     const finalMetadata = createFinalMetadata();
-
-    if (creating.value) {
-      // For creation, we need to include the subdenom
-      console.log('Create token:', {
-        subdenom: newSubdenom.value.trim(),
-        metadata: finalMetadata
-      });
-    } else {
-      // For update, we just need the metadata
-      console.log('Update metadata:', finalMetadata);
-    }
+    console.log('Update metadata:', finalMetadata);
   };
 
   const handleCopyJson = () => {
@@ -168,24 +186,16 @@ function MetadataSection({ metadata }: { metadata: Signal<TokenFactory.TokenMeta
     };
   };
 
+  useSignalEffect(() => {
+    const msgs_ = msgs.value;
+    const err = tx.estimate.value?.error;
+    if (err) {
+      console.error(msgs_, err);
+    }
+  });
+
   return (
     <div class="space-y-6">
-      {creating.value && (
-        <div>
-          <Label required info={
-            <span>
-              Subdenom of your new token. Must be unique to your account. The result will be <code class="font-mono">factory/{state.creator.value}/{newSubdenom.value || '<subdenom>'}</code>.
-            </span>
-          }>
-            Subdenom
-          </Label>
-          <input
-            value={newSubdenom.value}
-            onChange={(e) => (newSubdenom.value = (e.target as HTMLInputElement).value)}
-            class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      )}
       <div class="grid grid-cols-2 gap-4">
         <div>
           <Label required info="Full name of your token.">
@@ -261,7 +271,7 @@ function MetadataSection({ metadata }: { metadata: Signal<TokenFactory.TokenMeta
       </Collapsible>
 
       <div class="flex justify-between">
-        <CreationFee />
+        <CreationFee tx={tx} valid={isValid} />
         <div class="flex gap-2">
           <button
             onClick={handleCopyJson}
@@ -285,7 +295,7 @@ function MetadataSection({ metadata }: { metadata: Signal<TokenFactory.TokenMeta
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             )}
           >
-            {creating.value ? 'Create' : 'Update'}
+            Update
           </button>
         </div>
       </div>
